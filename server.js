@@ -49,7 +49,8 @@ app.post('/login', async (req, res) => {
 		if (user[COLUMNS.IS_SUB_ACTIVE] == 0) return res.status(403).send("Subscription revoked")
 
 		//remember to use transaction later
-		//check if its the first login, if so then accept the newly entered password;onboarding logic
+		//check if its the first login, if so then accept the newly entered password;
+		//onboarding logic
 		if (user[COLUMNS.USER_PSSWRD] == null) {
 			const salt = await bcrypt.genSalt()
 			const hashed_pass = await bcrypt.hash(password, salt)
@@ -64,6 +65,7 @@ app.post('/login', async (req, res) => {
 		}
 		else {
 			//this would trigger when a user has to login again after getting his subscription revoked
+			//or when he tries to login into a different device which dont have the issued token
 			if (bcrypt.compareSync(password, user[COLUMNS.USER_PSSWRD])) {
 				const tokens = await generateTokens(user_name)
 				return res.status(200).json(tokens)
